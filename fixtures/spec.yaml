@@ -27,7 +27,7 @@ tests:
       SELECT orders.id, orders.quantity, products.description from orders
       INNER JOIN products on orders.product_id = products.id
     expected_result:
-      csv: fixtures/expected_data.csv
+      csv: fixtures/expectations/test1.csv
 
   - name: orders test 2
     sources:
@@ -39,4 +39,16 @@ tests:
       SELECT count(*) from orders
       INNER JOIN products on orders.product_id = products.id
     expected_result:
-      csv: fixtures/expected_data.csv
+      csv: fixtures/expectations/test2.csv
+
+  - name: orders test 2
+    sources:
+      - table_name: orders
+        csv: fixtures/orders.csv
+      - table_name: products
+        csv: fixtures/products.csv
+    transformation: | 
+      SELECT 1 from orders
+      INNER JOIN products on orders.product_id = products.id
+    expected_result:
+      csv: fixtures/expectations/test2.csv

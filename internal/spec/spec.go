@@ -1,8 +1,8 @@
 package spec
 
 type Spec struct {
-	Tables []TableSpec
-	Tests  []TestSpec
+	Tables    []TableSpec
+	TestSpecs []TestSpec `yaml:"tests"`
 }
 
 type TableSpec struct {

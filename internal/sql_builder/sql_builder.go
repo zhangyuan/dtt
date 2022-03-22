@@ -2,11 +2,11 @@ package sql_builder
 
 import (
 	"bytes"
-	"datatest/internal/spec"
 	"encoding/csv"
 	"fmt"
 	"os"
 	"strings"
+	"trt/internal/spec"
 )
 
 func BuildSQL(tables []spec.TableSpec, test spec.TestSpec) (string, error) {
@@ -17,8 +17,6 @@ func BuildSQL(tables []spec.TableSpec, test spec.TestSpec) (string, error) {
 			return "", err
 		}
 		valueTables = append(valueTables, valueTable)
-
-		fmt.Printf("Partial SQL: %+v\n", valueTable)
 	}
 
 	var buffer bytes.Buffer
