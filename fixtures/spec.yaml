@@ -1,0 +1,42 @@
+tables:
+  - name: orders
+    columns:
+      - name: id
+        data_type: int
+      - name: product_id
+        data_type: int
+      - name: quantity
+        data_type: int
+      - name: created_date
+        data_type: timestamp
+  - name: products
+    columns:
+      - name: id
+        data_type: int
+      - name: description
+        data_type: varchar
+
+tests:
+  - name: orders test
+    sources:
+      - table_name: orders
+        csv: fixtures/orders.csv
+      - table_name: products
+        csv: fixtures/products.csv
+    transformation: | 
+      SELECT orders.id, orders.quantity, products.description from orders
+      INNER JOIN products on orders.product_id = products.id
+    expected_result:
+      csv: fixtures/expected_data.csv
+
+  - name: orders test 2
+    sources:
+      - table_name: orders
+        csv: fixtures/orders.csv
+      - table_name: products
+        csv: fixtures/products.csv
+    transformation: | 
+      SELECT count(*) from orders
+      INNER JOIN products on orders.product_id = products.id
+    expected_result:
+      csv: fixtures/expected_data.csv
