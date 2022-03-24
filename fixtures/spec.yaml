@@ -23,9 +23,10 @@ tests:
         csv: fixtures/orders.csv
       - table_name: products
         csv: fixtures/products.csv
-    transformation: | 
-      SELECT orders.id, orders.quantity, products.description from orders
-      INNER JOIN products on orders.product_id = products.id
+    transformation:
+      query: | 
+        SELECT orders.id, orders.quantity, products.description from orders
+        INNER JOIN products on orders.product_id = products.id
     expected_result:
       csv: fixtures/expectations/test1.csv
 
@@ -35,20 +36,39 @@ tests:
         csv: fixtures/orders.csv
       - table_name: products
         csv: fixtures/products.csv
-    transformation: | 
-      SELECT count(*) from orders
-      INNER JOIN products on orders.product_id = products.id
+    transformation:
+      query: | 
+        SELECT count(*) from orders
+        INNER JOIN products on orders.product_id = products.id
     expected_result:
       csv: fixtures/expectations/test2.csv
 
-  - name: orders test 2
+  - name: orders test 3
     sources:
       - table_name: orders
         csv: fixtures/orders.csv
       - table_name: products
         csv: fixtures/products.csv
-    transformation: | 
-      SELECT 1 from orders
-      INNER JOIN products on orders.product_id = products.id
+    transformation:
+      query: |
+        WITH vars as (
+            select '2021-01-01'::timestamp as processed_date
+        )
+        SELECT orders.id, orders.quantity, products.description, vars.processed_date 
+        from vars, orders
+        INNER JOIN products on orders.product_id = products.id
     expected_result:
-      csv: fixtures/expectations/test2.csv
+      csv: fixtures/expectations/test3.csv
+
+  - name: orders test 4
+    sources:
+      - table_name: orders
+        csv: fixtures/orders.csv
+      - table_name: products
+        csv: fixtures/products.csv
+    transformation: 
+      query: |
+        SELECT 1 from orders
+        INNER JOIN products on orders.product_id = products.id
+    expected_result:
+      csv: fixtures/expectations/test4.csv

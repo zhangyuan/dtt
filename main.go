@@ -6,7 +6,6 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"reflect"
@@ -67,6 +66,7 @@ func run() error {
 			return err
 		}
 
+		fmt.Println(">>>>>" + testSpec.Name + "")
 		fmt.Println(sql)
 
 		actualData, err := Sql2Rows(db, sql)
@@ -83,14 +83,18 @@ func run() error {
 
 	isOk := true
 	for _, report := range reports {
+		fmt.Println("===================>" + report.Spec.Name)
 		if report.IsOk() {
-			fmt.Print("[OK]")
+			fmt.Println("[Ok]")
 		} else {
 			isOk = false
-			fmt.Print("[Failed]")
-		}
+			fmt.Println("[Failed]")
+			fmt.Println("Expected:")
+			fmt.Println(report.ExpectedData)
 
-		fmt.Printf("%s \n", report.Spec.Name)
+			fmt.Println("Actual:")
+			fmt.Println(report.ActualData)
+		}
 	}
 
 	if isOk {
@@ -133,17 +137,11 @@ func Sql2Rows(db *sqlx.DB, sql string) ([][]string, error) {
 	values := make([]interface{}, count)
 	valuePtrs := make([]interface{}, count)
 
-	file, err := ioutil.TempFile("", "output.*.csv")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
 	var rows [][]string
 
 	rows = append(rows, columnNames)
 
-	if sqlRows.Next() {
+	for sqlRows.Next() {
 		for i := range columnNames {
 			valuePtrs[i] = &values[i]
 		}

@@ -12,7 +12,7 @@ import (
 func BuildSQL(tables []spec.TableSpec, test spec.TestSpec) (string, error) {
 	valueTables := []string{}
 	for _, source := range test.Sources {
-		valueTable, err := buildTable(&source, tables, test.Transformation)
+		valueTable, err := buildTable(&source, tables, test.Transformation.Query)
 		if err != nil {
 			return "", err
 		}
@@ -24,7 +24,14 @@ func BuildSQL(tables []spec.TableSpec, test spec.TestSpec) (string, error) {
 	buffer.WriteString("WITH\n")
 	buffer.WriteString(strings.Join(valueTables, ", \n"))
 	buffer.WriteString("\n")
-	buffer.WriteString(test.Transformation)
+
+	query := strings.TrimSpace(test.Transformation.Query)
+	if strings.ToUpper(query[0:4]) == "WITH" {
+		buffer.WriteString(",")
+		buffer.WriteString(query[4:])
+	} else {
+		buffer.WriteString(query)
+	}
 
 	return buffer.String(), nil
 }

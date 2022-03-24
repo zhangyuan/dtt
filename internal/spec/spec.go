@@ -18,8 +18,13 @@ type ColumnSpec struct {
 type TestSpec struct {
 	Name           string
 	Sources        []SourceSpec
-	Transformation string
+	Transformation TransformationSpec
 	ExpectedResult ExpectedResult `yaml:"expected_result"`
+}
+
+type TransformationSpec struct {
+	Query     string
+	QueryPath string
 }
 
 type SourceSpec struct {
