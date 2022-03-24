@@ -1,4 +1,4 @@
-module trt
+module dtt
 
 go 1.17
 

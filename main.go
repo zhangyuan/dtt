@@ -1,6 +1,8 @@
 package main
 
 import (
+	"dtt/internal/spec"
+	"dtt/internal/sql_builder"
 	"encoding/csv"
 	"errors"
 	"fmt"
@@ -8,8 +10,6 @@ import (
 	"log"
 	"os"
 	"reflect"
-	"trt/internal/spec"
-	"trt/internal/sql_builder"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -66,6 +66,8 @@ func run() error {
 		if err != nil {
 			return err
 		}
+
+		fmt.Println(sql)
 
 		actualData, err := Sql2Rows(db, sql)
 		if err != nil {

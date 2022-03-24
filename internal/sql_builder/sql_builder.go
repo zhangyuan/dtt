@@ -2,11 +2,11 @@ package sql_builder
 
 import (
 	"bytes"
+	"dtt/internal/spec"
 	"encoding/csv"
 	"fmt"
 	"os"
 	"strings"
-	"trt/internal/spec"
 )
 
 func BuildSQL(tables []spec.TableSpec, test spec.TestSpec) (string, error) {
