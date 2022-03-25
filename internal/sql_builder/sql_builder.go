@@ -38,15 +38,6 @@ func BuildSQL(tables []spec.TableSpec, test spec.TestSpec) (string, error) {
 	return buffer.String(), nil
 }
 
-func findTable(tables *[]spec.TableSpec, tableName string) (*spec.TableSpec, error) {
-	for _, table := range *tables {
-		if table.Name == tableName {
-			return &table, nil
-		}
-	}
-	return nil, fmt.Errorf("table '%s' is not found", tableName)
-}
-
 func findColumn(columns *[]spec.ColumnSpec, columnName string) (*spec.ColumnSpec, error) {
 	for _, column := range *columns {
 		if columnName == column.Name {
