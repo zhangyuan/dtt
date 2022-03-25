@@ -1,0 +1,13 @@
+tests:
+  - name: orders test
+    sources:
+      - table_name: orders
+        csv: fixtures/spec2/orders.csv
+      - table_name: products
+        csv: fixtures/spec2/products.csv
+    transformation:
+      query: | 
+        SELECT orders.id, orders.quantity, products.description from orders
+        INNER JOIN products on orders.product_id = products.id
+    expected_result:
+      csv: fixtures/spec2/expectations/test1.csv

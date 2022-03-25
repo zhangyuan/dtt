@@ -52,7 +52,7 @@ func run() error {
 		log.Fatalln(err)
 	}
 
-	spec, err := loadSpec("./fixtures/spec.yaml")
+	spec, err := loadSpec("./fixtures/spec2/spec2.yaml")
 
 	if err != nil {
 		return err

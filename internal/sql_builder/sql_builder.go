@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/samber/lo"
 )
 
 func BuildSQL(tables []spec.TableSpec, test spec.TestSpec) (string, error) {
@@ -55,29 +57,30 @@ func findColumn(columns *[]spec.ColumnSpec, columnName string) (*spec.ColumnSpec
 }
 
 func buildTable(source *spec.SourceSpec, tables []spec.TableSpec, transformation string) (string, error) {
-	tableSpec, err := findTable(&tables, source.TableName)
+	csvFile, err := os.Open(source.Csv)
 	if err != nil {
 		return "", err
 	}
+	csvReader := csv.NewReader(csvFile)
+	records, err := csvReader.ReadAll()
 
-	csvFile, err := os.Open(source.Csv)
 	if err != nil {
 		return "", err
 	}
 
 	defer csvFile.Close()
 
-	csvReader := csv.NewReader(csvFile)
-	csvRows, err := csvReader.ReadAll()
-
-	if err != nil {
-		return "", err
+	if tableSpec, ok := lo.Find(tables, func(t spec.TableSpec) bool { return t.Name == source.TableName }); ok {
+		return buildTableWithDataType(tableSpec, records)
+	} else {
+		return buildTableWithoutDataType(source.TableName, records), nil
 	}
+}
 
+func buildTableWithDataType(tableSpec spec.TableSpec, records [][]string) (string, error) {
 	valueExpressions := []string{}
 	headersValues := []string{}
-	for rowIndex, row := range csvRows {
-
+	for rowIndex, row := range records {
 		if rowIndex == 0 {
 			headersValues = row
 			continue
@@ -113,5 +116,33 @@ __dt_values__)`
 	template = strings.ReplaceAll(template, "__dt_values__", strings.Join(valueExpressions, ", \n"))
 
 	return template, nil
+}
 
+func buildTableWithoutDataType(tableName string, rawRecords [][]string) string {
+	records := []string{}
+	columnNames := []string{}
+	for rowIndex, rawRecord := range rawRecords {
+		if rowIndex == 0 {
+			columnNames = rawRecord
+			continue
+		}
+
+		recordFields := []string{}
+		for _, rawField := range rawRecord {
+			recordFields = append(recordFields, rawField)
+		}
+
+		record := fmt.Sprintf("(%s)", strings.Join(recordFields, ", "))
+		records = append(records, record)
+	}
+
+	template := `__dt_table_name__ (__dt_column_names__) AS (
+VALUES
+__dt_records__)`
+
+	template = strings.ReplaceAll(template, "__dt_table_name__", tableName)
+	template = strings.ReplaceAll(template, "__dt_column_names__", strings.Join(columnNames, ","))
+	template = strings.ReplaceAll(template, "__dt_records__", strings.Join(records, ", \n"))
+
+	return template
 }
