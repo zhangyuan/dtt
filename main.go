@@ -9,15 +9,26 @@ import (
 	"log"
 	"os"
 	"reflect"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+
+	"flag"
 
 	"gopkg.in/yaml.v2"
 )
 
 func main() {
-	if err := run(); err != nil {
+	specPath := flag.String("spec", "", "path to spec")
+
+	flag.Parse()
+
+	if strings.TrimSpace(*specPath) == "" {
+		log.Fatalln("spec is required.")
+	}
+
+	if err := run(*specPath); err != nil {
 		log.Fatalln(err)
 	}
 }
@@ -46,13 +57,13 @@ func loadSpec(path string) (*spec.Spec, error) {
 	return &spec, nil
 }
 
-func run() error {
+func run(specPath string) error {
 	db, err := sqlx.Connect("postgres", "host=192.168.64.6 user=postgres password=postgres dbname=postgres sslmode=disable")
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	spec, err := loadSpec("./fixtures/spec2/spec2.yaml")
+	spec, err := loadSpec(specPath)
 
 	if err != nil {
 		return err
