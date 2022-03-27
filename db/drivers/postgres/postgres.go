@@ -1,8 +1,9 @@
-package sql_builder
+package postgres
 
 import (
 	"bytes"
-	"dtt/internal/spec"
+	"dtt/db"
+	"dtt/spec"
 	"encoding/csv"
 	"fmt"
 	"os"
@@ -11,7 +12,11 @@ import (
 	"github.com/samber/lo"
 )
 
-func BuildSQL(tables []spec.TableSpec, test spec.TestSpec) (string, error) {
+type PostgresBuilder struct {
+	db.SQLBuilder
+}
+
+func (builder *PostgresBuilder) BuildSQL(tables []spec.TableSpec, test spec.TestSpec) (string, error) {
 	valueTables := []string{}
 	for _, source := range test.Sources {
 		valueTable, err := buildTable(&source, tables, test.Transformation.Query)

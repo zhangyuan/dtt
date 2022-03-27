@@ -1,5 +1,11 @@
 package spec
 
+import (
+	"os"
+
+	"gopkg.in/yaml.v2"
+)
+
 type Spec struct {
 	Tables    []TableSpec
 	TestSpecs []TestSpec `yaml:"tests"`
@@ -34,4 +40,18 @@ type SourceSpec struct {
 
 type ExpectedResult struct {
 	Csv string
+}
+
+func NewSpecFromPath(path string) (*Spec, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	spec := Spec{}
+
+	if err := yaml.Unmarshal(data, &spec); err != nil {
+		return nil, err
+	}
+
+	return &spec, nil
 }
