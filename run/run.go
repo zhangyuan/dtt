@@ -2,7 +2,6 @@ package run
 
 import (
 	"dtt/db"
-	"dtt/db/drivers/postgres"
 	"dtt/spec"
 	"encoding/csv"
 	"errors"
@@ -22,14 +21,12 @@ func (run *Run) IsOk() bool {
 }
 
 func Execute(database *db.Database, spec *spec.Spec) error {
-	reports := []Run{}
-
-	var sqlBuilder db.SQLBuilder
-	if database.Driver == "postgres" {
-		sqlBuilder = &postgres.PostgresBuilder{}
-	} else {
-		return fmt.Errorf("database %s is not supported yet", database.Driver)
+	sqlBuilder, err := db.NewSQLBuilder(database)
+	if err != nil {
+		return err
 	}
+
+	reports := []Run{}
 
 	for _, testSpec := range spec.TestSpecs {
 		sql, err := sqlBuilder.BuildSQL(spec.Tables, testSpec)

@@ -2,7 +2,8 @@ package postgres
 
 import (
 	"bytes"
-	"dtt/db"
+
+	"dtt/db/sql_builder"
 	"dtt/spec"
 	"encoding/csv"
 	"fmt"
@@ -13,7 +14,7 @@ import (
 )
 
 type PostgresBuilder struct {
-	db.SQLBuilder
+	sql_builder.SQLBuilder
 }
 
 func (builder *PostgresBuilder) BuildSQL(tables []spec.TableSpec, test spec.TestSpec) (string, error) {
