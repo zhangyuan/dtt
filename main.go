@@ -28,9 +28,37 @@ func main() {
 		log.Fatalln("spec is required.")
 	}
 
-	if err := run(*specPath); err != nil {
+	database, err := NewDatabaseFromEnv()
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	if err := run(database, *specPath); err != nil {
 		log.Fatalln(err)
 	}
+
+}
+
+type Database struct {
+	Driver         string // "postgres"
+	DataSourceName string // "host=192.168.64.6 user=postgres password=postgres dbname=postgres sslmode=disable"
+}
+
+func NewDatabaseFromEnv() (*Database, error) {
+	databaseDriver, ok := os.LookupEnv("DATABASE_DRIVER")
+	if ok == false {
+		return nil, errors.New("DATABASE_DRIVER is empty")
+	}
+
+	dataSourceName, ok := os.LookupEnv("DATA_SOURCE_NAME")
+	if ok == false {
+		return nil, errors.New("DATA_SOURCE_NAME is empty")
+	}
+
+	return &Database{
+		Driver:         databaseDriver,
+		DataSourceName: dataSourceName,
+	}, nil
 }
 
 type Run struct {
@@ -57,14 +85,14 @@ func loadSpec(path string) (*spec.Spec, error) {
 	return &spec, nil
 }
 
-func run(specPath string) error {
-	db, err := sqlx.Connect("postgres", "host=192.168.64.6 user=postgres password=postgres dbname=postgres sslmode=disable")
+func run(database *Database, specPath string) error {
+	db, err := sqlx.Connect(database.Driver, database.DataSourceName)
+
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 
 	spec, err := loadSpec(specPath)
-
 	if err != nil {
 		return err
 	}
