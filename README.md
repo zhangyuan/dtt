@@ -14,7 +14,8 @@ Example:
 ```bash
 export DATABASE_DRIVER=postgres
 export DATA_SOURCE_NAME="host=192.168.64.6 user=postgres password=postgres dbname=postgres sslmode=disable"
-go run main.go --spec fixtures/spec.yaml
+go run main.go --spec tests/spec1/spec.yaml
+go run main.go --spec tests/spec2/spec.yaml
 ```
 
 ## Spec Example
