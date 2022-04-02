@@ -5,7 +5,7 @@ The tool is aiming to simplify SQL transformation testing. Source and expected d
 
 ## How it works
 
-The idea is really simple. The tool just builds a SQL statement that combine source data with `WITH` statement, and run it in real database. Currently only postgres is supported.
+The idea is really simple. The tool just builds a SQL statement that combine source data with `WITH` statement, and run it in real database without creating physical tables. Currently only postgres is supported.
 
 ## How to run it
 
